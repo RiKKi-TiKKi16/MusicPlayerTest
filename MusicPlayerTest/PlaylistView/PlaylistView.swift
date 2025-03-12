@@ -34,7 +34,7 @@ struct PlaylistView<Presenter: PlaylistViewPresenterProtocol, MediaInfo: PlayerS
     }
     
     var duration: Double {
-        mediaInfo.duration == 0 || mediaInfo.duration.isNaN ? Double(mediaInfo.played?.trackTimeMillis ?? 30000 / 1000) : mediaInfo.duration
+        mediaInfo.duration
     }
     
     var body: some View {
@@ -61,13 +61,13 @@ struct PlaylistView<Presenter: PlaylistViewPresenterProtocol, MediaInfo: PlayerS
                 
                 VStack(alignment: .center, spacing: 5) {
                     
-                    Text(mediaInfo.played?.artistName ?? "")
+                    Text(mediaInfo.played?.trackName ?? "")
                         .font(titleFont.font)
                         .fontWeight(.semibold)
                         .lineSpacing(titleFont.lineSpacing)
                         .padding(.vertical, titleFont.verticalPadding)
                         .foregroundColor(.white)
-                    Text(mediaInfo.played?.trackName ?? "")
+                    Text(mediaInfo.played?.artistName ?? "")
                         .font(artistFont.font)
                         .fontWeight(.medium)
                         .lineSpacing(artistFont.lineSpacing)
@@ -81,11 +81,9 @@ struct PlaylistView<Presenter: PlaylistViewPresenterProtocol, MediaInfo: PlayerS
                 VStack(spacing: 11) {
                     
                     let curTime = mediaInfo.curTime
-                    let duration = mediaInfo.duration == 0 || mediaInfo.duration.isNaN ? mediaInfo.played?.trackTimeMillis ?? 30000 / 1000 : Int(mediaInfo.duration)
-                    
                     
                     CustomSliderView(progress: $progress, change: {
-                        let time = mediaInfo.duration * $0
+                        let time = duration * $0
                         presenter.seek(to: time)
                     })
                     
@@ -96,11 +94,7 @@ struct PlaylistView<Presenter: PlaylistViewPresenterProtocol, MediaInfo: PlayerS
                             .padding(.vertical, timeFont.verticalPadding)
                         Spacer()
                         
-                        
-                        
-                        
-                        
-                        Text(formattedDuration(seconds: duration))
+                        Text(formattedDuration(seconds: Int(duration)))
                             .lineSpacing(timeFont.lineSpacing)
                             .padding(.vertical, timeFont.verticalPadding)
                     }
@@ -181,6 +175,10 @@ struct PlaylistView<Presenter: PlaylistViewPresenterProtocol, MediaInfo: PlayerS
             } else {
                 presenter.prev()
             }
+        })
+        .onAppear(perform: {
+            guard mediaInfo.curTime != 0 else { return }
+            progress = mediaInfo.curTime / duration
         })
         .onChange(of: mediaInfo.curTime, { oldValue, newValue in
             progress = newValue / duration

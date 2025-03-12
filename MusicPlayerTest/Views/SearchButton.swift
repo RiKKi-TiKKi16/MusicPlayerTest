@@ -14,9 +14,7 @@ struct SearchButton: View {
     
     var body: some View {
         HStack {
-            if !isExpanded {
-                Spacer()
-            }
+            if !isExpanded { Spacer() }
             
             HStack {
                 if isExpanded {
@@ -29,10 +27,7 @@ struct SearchButton: View {
                 
                 Button(action: {
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                        if searchText.isEmpty {
-                            isExpanded.toggle()
-                        }
-                        
+                        if searchText.isEmpty { isExpanded.toggle() }
                         isTextFieldFocused = isExpanded
                     }
                 }) {
@@ -43,6 +38,7 @@ struct SearchButton: View {
                         .padding()
                 }
                 .frame(width: 40, height: 40)
+                
             }
             .frame(width: isExpanded ? nil : 40, height: 40)
             .background(Color.white.opacity(0.2))

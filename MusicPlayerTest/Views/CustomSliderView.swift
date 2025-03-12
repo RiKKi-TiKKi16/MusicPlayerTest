@@ -12,10 +12,10 @@ struct CustomSliderView: View {
     @Binding var progress: CGFloat // Значение от 0.0 до 1.0
     @State private var gestureValue: CGFloat?
     var change: (_ value: CGFloat) -> Void
+    let side: CGFloat = 13
     
     var body: some View {
         ZStack {
-            
             Capsule()
                 .fill(Color.white.opacity(0.4))
                 .frame(height: 2)
@@ -24,12 +24,9 @@ struct CustomSliderView: View {
                 let progressWidth = geometry.size.width * (gestureValue ?? progress)
                 
                 ZStack(alignment: .leading) {
-                    
                     Capsule()
                         .fill(Color.white)
                         .frame(width: progressWidth, height: 2)
-                    
-                    let side: CGFloat = 13
                     
                     Circle()
                         .fill(Color.white)
@@ -45,7 +42,6 @@ struct CustomSliderView: View {
                                     progress = gestureValue
                                     change(gestureValue)
                                 }
-                                
                                 gestureValue = nil
                             })
                         )

@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+enum DragState {
+    case inactive
+    case dragging(translation: CGSize)
+
+    var translation: CGSize {
+        switch self {
+        case .inactive:                    return .zero
+        case .dragging(let translation):   return translation
+        }
+    }
+}
 
 struct CarousalView: View {
     @GestureState private var dragState = DragState.inactive
@@ -23,9 +34,7 @@ struct CarousalView: View {
                     .cornerRadius(15)
                     .opacity(getOpacity(i))
                     .offset(x: getOffset(i))
-                    .animation(.interpolatingSpring(stiffness: 300,
-                                                    damping: 30,
-                                                    initialVelocity: 10))
+                    .animation(.interpolatingSpring(stiffness: 300, damping: 30, initialVelocity: 10))
             }
         }
         .gesture(
@@ -39,6 +48,7 @@ struct CarousalView: View {
 
     private func onDragEnded(drag: DragGesture.Value) {
         let dragThreshold: CGFloat = 200
+        
         if drag.predictedEndTranslation.width > dragThreshold || drag.translation.width > dragThreshold {
             carousalLocation -= 1
         } else if drag.predictedEndTranslation.width < -dragThreshold || drag.translation.width < -dragThreshold {
@@ -46,9 +56,7 @@ struct CarousalView: View {
         }
     }
 
-    func relativeLoc() -> Int {
-        return ((views.count * 10000) + carousalLocation) % views.count
-    }
+    func relativeLoc() -> Int { return ((views.count * 10000) + carousalLocation) % views.count }
 
     func getOffset(_ i: Int) -> CGFloat {
         let spacing: CGFloat = 24
@@ -74,13 +82,9 @@ struct CarousalView: View {
         }
     }
 
-    func getWidth(_ i: Int) -> CGFloat {
-        return i == relativeLoc() ? 239 : 178
-    }
+    func getWidth(_ i: Int) -> CGFloat { return i == relativeLoc() ? 239 : 178 }
 
-    func getHeight(_ i: Int) -> CGFloat {
-        return i == relativeLoc() ? 274 : 224
-    }
+    func getHeight(_ i: Int) -> CGFloat { return i == relativeLoc() ? 274 : 224 }
 
     func getOpacity(_ i: Int) -> Double {
         if i == relativeLoc()
@@ -92,23 +96,8 @@ struct CarousalView: View {
             || (i - 1) - views.count == relativeLoc()
             || (i + 2) - views.count == relativeLoc()
             || (i - 2) - views.count == relativeLoc()
-        {
-            return 1
-        }
-        return 0
+        { return 1 }
+          return 0
     }
 }
 
-enum DragState {
-    case inactive
-    case dragging(translation: CGSize)
-
-    var translation: CGSize {
-        switch self {
-        case .inactive:
-            return .zero
-        case .dragging(let translation):
-            return translation
-        }
-    }
-}
